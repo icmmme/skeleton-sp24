@@ -90,7 +90,10 @@ public class SpeciesListStage implements AdventureStage {
      * Computes the similarity of two lists. If there is similarity, return 1.
      * If there is no similarity, it should return 0.
      */
-    public static int arraySimilarity(List<String> listOne, List<String> listTwo) {
+    public static double arraySimilarity(List<String> listOne, List<String> listTwo) {
+        if(listOne.size()==0){
+            return listTwo.size()==0?1.0:0.0;
+        }
         List<String> copy = new ArrayList<>(listOne);
         int similarObjects = 0;
         for (String o : listTwo) {
@@ -99,6 +102,6 @@ public class SpeciesListStage implements AdventureStage {
                 copy.remove(o);
             }
         }
-        return similarObjects / listOne.size();
+        return ((double) similarObjects)/ listOne.size();
     }
 }
