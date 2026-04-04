@@ -5,11 +5,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-
 public class LinkedListDeque61B<T> implements Deque61B<T> {
-    @Override
-    public Iterator<T> iterator() {
-        return new LinkedListDequeIterator();
+
+    private class Node {
+        T item;
+        Node prev;
+        Node next;
+
+        Node(T item, Node prev, Node next) {
+            this.item = item;
+            this.prev = prev;
+            this.next = next;
+        }
     }
 
     private class LinkedListDequeIterator implements Iterator<T> {
@@ -30,17 +37,7 @@ public class LinkedListDeque61B<T> implements Deque61B<T> {
             return result;
         }
     }
-    private class Node{
-        T item;
-        Node prev;
-        Node next;
 
-        Node(T item, Node prev, Node next){
-            this.item = item;
-            this.prev = prev;
-            this.next = next;
-        }
-    }
     private Node sentinel;
     private int size;
 
@@ -50,6 +47,12 @@ public class LinkedListDeque61B<T> implements Deque61B<T> {
         sentinel.prev = sentinel;
         size = 0;
     }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new LinkedListDequeIterator();
+    }
+
     @Override
     public void addFirst(T x) {
         Node first = new Node(x, sentinel, sentinel.next);
@@ -70,17 +73,16 @@ public class LinkedListDeque61B<T> implements Deque61B<T> {
     public List<T> toList() {
         List<T> list = new ArrayList<>(size);
         Node p = sentinel.next;
-        while (p != sentinel){
+        while (p != sentinel) {
             list.add(p.item);
             p = p.next;
         }
-        return list;
+        return list; // 修复了之前的 List.of()
     }
 
     @Override
     public boolean isEmpty() {
-
-        return size==0;
+        return size == 0;
     }
 
     @Override
@@ -90,12 +92,12 @@ public class LinkedListDeque61B<T> implements Deque61B<T> {
 
     @Override
     public T removeFirst() {
-        if(isEmpty()) return null;
+        if (isEmpty()) return null;
         Node first = sentinel.next;
         T val = first.item;
         sentinel.next = first.next;
         first.next.prev = sentinel;
-        // help gc
+
         first.next = null;
         first.prev = null;
         first.item = null;
@@ -105,11 +107,12 @@ public class LinkedListDeque61B<T> implements Deque61B<T> {
 
     @Override
     public T removeLast() {
-        if(isEmpty()) return null;
+        if (isEmpty()) return null;
         Node last = sentinel.prev;
         T val = last.item;
         sentinel.prev = last.prev;
         last.prev.next = sentinel;
+
         last.next = null;
         last.prev = null;
         last.item = null;
@@ -121,7 +124,7 @@ public class LinkedListDeque61B<T> implements Deque61B<T> {
     public T get(int index) {
         if (index < 0 || index >= size) return null;
         Node p = sentinel.next;
-        for (int i=0; i<index; i++){
+        for (int i = 0; i < index; i++) {
             p = p.next;
         }
         return p.item;
@@ -132,10 +135,27 @@ public class LinkedListDeque61B<T> implements Deque61B<T> {
         if (index < 0 || index >= size) return null;
         return getRecursiveHelper(sentinel.next, index);
     }
-    private T getRecursiveHelper(Node p, int index){
-        if(p == sentinel) return null;
-        if(index == 0) return p.item;
-        return getRecursiveHelper(p.next, index-1);
+
+    private T getRecursiveHelper(Node p, int index) {
+        if (index == 0) return p.item;
+        return getRecursiveHelper(p.next, index - 1);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Deque61B<?> other)) return false;
+        if (this.size() != other.size()) return false;
+
+        for (int i = 0; i < size; i++) {
+            T a = this.get(i);
+            Object b = other.get(i);
+            if (a == null) {
+                if (b != null) return false;
+            } else if (!a.equals(b)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
-
