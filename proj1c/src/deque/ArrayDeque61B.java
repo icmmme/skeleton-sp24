@@ -1,9 +1,6 @@
 package deque;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class ArrayDeque61B<T> implements Deque61B<T> {
 
@@ -127,6 +124,25 @@ public class ArrayDeque61B<T> implements Deque61B<T> {
 
     @Override
     public Iterator<T> iterator() {
+        return new ArrayDequeIterator();
+    }
 
+    private class ArrayDequeIterator implements Iterator<T> {
+        private int pos = 0;
+
+        @Override
+        public boolean hasNext() {
+            return pos < size;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            T result = get(pos);
+            pos += 1;
+            return result;
+        }
     }
 }

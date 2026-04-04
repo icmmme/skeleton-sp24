@@ -1,18 +1,35 @@
 package deque;
 
-import org.w3c.dom.Node;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.PrimitiveIterator;
+import java.util.NoSuchElementException;
+
 
 public class LinkedListDeque61B<T> implements Deque61B<T> {
     @Override
     public Iterator<T> iterator() {
-        return null;
+        return new LinkedListDequeIterator();
     }
 
+    private class LinkedListDequeIterator implements Iterator<T> {
+        private Node p = sentinel.next;
+
+        @Override
+        public boolean hasNext() {
+            return p != sentinel;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            T result = p.item;
+            p = p.next;
+            return result;
+        }
+    }
     private class Node{
         T item;
         Node prev;
@@ -57,7 +74,7 @@ public class LinkedListDeque61B<T> implements Deque61B<T> {
             list.add(p.item);
             p = p.next;
         }
-        return List.of();
+        return list;
     }
 
     @Override
